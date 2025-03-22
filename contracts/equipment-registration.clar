@@ -1,30 +1,70 @@
+;; Equipment Registration Contract
+;; Records details of specialized sports gear
 
-;; title: equipment-registration
-;; version:
-;; summary:
-;; description:
+(define-data-var last-id uint u0)
 
-;; traits
-;;
+(define-map equipment
+  { id: uint }
+  {
+    name: (string-ascii 100),
+    type: (string-ascii 50),
+    sport: (string-ascii 50),
+    description: (string-ascii 200),
+    owner: principal,
+    available: bool
+  }
+)
 
-;; token definitions
-;;
+;; Register equipment
+(define-public (register
+    (name (string-ascii 100))
+    (type (string-ascii 50))
+    (sport (string-ascii 50))
+    (description (string-ascii 200))
+  )
+  (let
+    (
+      (new-id (+ (var-get last-id) u1))
+    )
+    (var-set last-id new-id)
 
-;; constants
-;;
+    (map-set equipment
+      { id: new-id }
+      {
+        name: name,
+        type: type,
+        sport: sport,
+        description: description,
+        owner: tx-sender,
+        available: true
+      }
+    )
 
-;; data vars
-;;
+    (ok new-id)
+  )
+)
 
-;; data maps
-;;
+;; Update availability
+(define-public (update-availability
+    (equipment-id uint)
+    (available bool)
+  )
+  (let
+    (
+      (item (unwrap! (map-get? equipment { id: equipment-id }) (err u404)))
+    )
+    (asserts! (is-eq tx-sender (get owner item)) (err u403))
 
-;; public functions
-;;
+    (map-set equipment
+      { id: equipment-id }
+      (merge item { available: available })
+    )
 
-;; read only functions
-;;
+    (ok true)
+  )
+)
 
-;; private functions
-;;
-
+;; Get equipment
+(define-read-only (get-equipment (id uint))
+  (map-get? equipment { id: id })
+)
