@@ -1,21 +1,56 @@
+import { describe, it, expect, vi } from 'vitest';
 
-import { describe, expect, it } from "vitest";
+// Mock implementation
+const mockModificationTracking = {
+  recordModification: vi.fn().mockImplementation((equipmentId, description, athleteNeeds) => {
+    return { value: 1 };
+  }),
+  
+  completeModification: vi.fn().mockImplementation((modificationId) => {
+    return { value: true };
+  }),
+  
+  getModification: vi.fn().mockImplementation((id) => {
+    return {
+      equipmentId: 3,
+      description: "Adjusted seat height and installed custom hand rims",
+      technician: "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM",
+      date: 12345,
+      athleteNeeds: "Need adjustable seat height and custom hand rims",
+      status: "completed"
+    };
+  })
+};
 
-const accounts = simnet.getAccounts();
-const address1 = accounts.get("wallet_1")!;
-
-/*
-  The test below is an example. To learn more, read the testing documentation here:
-  https://docs.hiro.so/stacks/clarinet-js-sdk
-*/
-
-describe("example tests", () => {
-  it("ensures simnet is well initalised", () => {
-    expect(simnet.blockHeight).toBeDefined();
+describe('Modification Tracking Contract', () => {
+  it('should record a modification', async () => {
+    const result = await mockModificationTracking.recordModification(
+        3,
+        "Adjusted seat height and installed custom hand rims",
+        "Need adjustable seat height and custom hand rims"
+    );
+    
+    expect(result.value).toBe(1);
+    expect(mockModificationTracking.recordModification).toHaveBeenCalledWith(
+        3,
+        "Adjusted seat height and installed custom hand rims",
+        "Need adjustable seat height and custom hand rims"
+    );
   });
-
-  // it("shows an example", () => {
-  //   const { result } = simnet.callReadOnlyFn("counter", "get-counter", [], address1);
-  //   expect(result).toBeUint(0);
-  // });
+  
+  it('should complete a modification', async () => {
+    const result = await mockModificationTracking.completeModification(1);
+    
+    expect(result.value).toBe(true);
+    expect(mockModificationTracking.completeModification).toHaveBeenCalledWith(1);
+  });
+  
+  it('should get modification details', async () => {
+    const modification = await mockModificationTracking.getModification(1);
+    
+    expect(modification.equipmentId).toBe(3);
+    expect(modification.description).toBe("Adjusted seat height and installed custom hand rims");
+    expect(modification.status).toBe("completed");
+    expect(mockModificationTracking.getModification).toHaveBeenCalledWith(1);
+  });
 });

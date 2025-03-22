@@ -13,3 +13,7 @@ Q
 !contracts/event-coordination.clar,0/7/077acd3dbf033a9f19088a862bf4c0ed621ef572
 P
  tests/event-coordination.test.ts,6/8/685b696380e4925595cb6c1f898465c46914dcbe
+T
+$contracts/modification-tracking.clar,a/7/a7bd9bb1d1dda713ab84f6c8433e9ae0bb86a9d9
+S
+#tests/modification-tracking.test.ts,0/1/016b7911db61f05f98e115f39aca242ad8efc6b8
